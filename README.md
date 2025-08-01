@@ -6,6 +6,15 @@ Um sistema completo para gerenciamento de comandas de bebidas e placar em tempo 
 
 O Super9 é uma aplicação web desenvolvida para facilitar o controle de bebidas durante eventos de Bike Polo. O sistema permite que participantes tenham comandas digitais com QR codes para retirar cervejas e quentão, além de acompanhar os jogos através de um placar em tempo real.
 
+### 📱 Interface do Sistema
+
+O sistema possui uma interface moderna e responsiva, adaptada para uso em dispositivos móveis durante eventos:
+
+- **Interface do Participante**: Cartão personalizado com foto, produtos disponíveis e geração de QR codes
+- **Painel Administrativo**: Menu completo para gerenciamento de comandas e fichas
+- **Placar em Tempo Real**: Controle de jogos com timer e pontuação
+- **Sistema de Validação**: Interface para atendimento validar QR codes
+
 ## ✨ Funcionalidades Principais
 
 ### 🍻 Controle de Comandas
@@ -20,6 +29,8 @@ O Super9 é uma aplicação web desenvolvida para facilitar o controle de bebida
 - **Histórico de Partidas**: Registro de todos os jogos realizados
 - **Interface Visual**: Design moderno e intuitivo
 
+![Placar em Tempo Real](assets/placar.png)
+
 ### 🔧 Painel Administrativo
 - **Abertura de Comandas**: Criação de novas comandas para participantes
 - **Adição de Fichas**: Recarga de bebidas nas comandas existentes
@@ -29,6 +40,8 @@ O Super9 é uma aplicação web desenvolvida para facilitar o controle de bebida
 ## 🚀 Como Usar
 
 ### Para Participantes
+
+![Cartão do Usuário](assets/CartaoUsuario.png)
 
 1. **Acesse sua comanda**: Use o link personalizado com seu ID
    ```
@@ -43,13 +56,22 @@ O Super9 é uma aplicação web desenvolvida para facilitar o controle de bebida
 
 5. **Acompanhe o histórico**: Veja todas as suas retiradas e recargas
 
+![Histórico do Usuário](assets/historicoUsuario.png)
+
 ### Para Administradores
+
+![Menu Principal Admin](assets/MenuPrincipalAdmin.png)
 
 1. **Acesse o painel admin**: `admin.html`
 2. **Abra comandas**: Crie novas comandas para participantes
 3. **Adicione fichas**: Recarregue bebidas nas comandas existentes
+
+![Adicionar Fichas](assets/AdicionarFichas.png)
+
 4. **Gerencie comandas**: Visualize e edite todas as comandas
 5. **Monitore logs**: Acompanhe todas as ações do sistema
+
+![Validação de Ficha Admin](assets/validacaodefichaadmin.png)
 
 ### Para Atendimento
 
@@ -78,6 +100,7 @@ super9/
 ├── placar_backend.php      # Backend do placar
 ├── logs.php                # Sistema de logs
 ├── composer.json           # Dependências PHP
+├── assets/                 # Screenshots da interface
 ├── pics/                   # Fotos dos participantes
 ├── gifs/                   # GIFs animados por categoria
 └── logs/                   # Arquivos de log do sistema
@@ -202,7 +225,20 @@ O sistema gera logs detalhados em `logs/super9.log`:
 
 ## 📄 Licença
 
-Este projeto é de uso interno para eventos de Bike Polo.
+**Copyleft** - Esta obra é livre, você pode copiar, compartilhar e modificar sob os termos da [Licença da Arte Livre 1.3](http://artlibre.org/licence/lal/pt/)
+
+### 🆓 Três Liberdades Fundamentais:
+- **O direito de copiar** este trabalho para si, para seus amigos ou qualquer outra pessoa, independentemente da técnica utilizada
+- **O direito de distribuir** cópias desta obra, sejam modificadas ou não, em qualquer mídia ou lugar, com ou sem cobrança de valores
+- **O direito de modificar** cópias dos originais (inicial ou subseqüentes)
+
+### ✅ Três Garantias Fundamentais:
+- **O dever de distribuir** o trabalho subseqüente sob a mesma licença ou qualquer licença compatível
+- **O dever de indicar** que a obra foi modificada e, se possível, que tipo de modificações foram feitas
+- **O dever de especificar** para o receptor os nomes dos autores das obras originais
+
+Este projeto foi desenvolvido com 💻 e 🍺 para facilitar a vida dos amantes de Bike Polo. 
+Compartilhe, modifique e distribua livremente! 🏑
 
 ## 👨‍💻 Desenvolvido por
 
