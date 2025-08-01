@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adicionar Fichas - Super9</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #181818;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      width: 100vw;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    body {
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+      padding: 0;
+    }
+    .conteudo-central {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 1em;
+    }
+    h1 {
+      font-size: 2.5em;
+      margin: 0.5em 0 0.5em 0;
+      color: #FF3B30;
+      font-weight: 900;
+      text-shadow: 0 0 10px #ff3b30aa;
+    }
+    .formulario {
+      background: #222;
+      border-radius: 20px;
+      padding: 2em 1em;
+      box-shadow: 0 8px 25px #0004;
+      max-width: 95vw;
+      margin: 1em auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5em;
+      align-items: center;
+    }
+    label {
+      font-size: 1.4em;
+      margin-bottom: 0.5em;
+      color: #ffb330;
+      font-weight: bold;
+    }
+    select, input[type="number"], input[type="password"] {
+      padding: 1em;
+      border-radius: 15px;
+      border: none;
+      font-size: 1.3em;
+      width: 90vw;
+      max-width: 350px;
+      margin-bottom: 0.5em;
+      background: #181818;
+      color: #fff;
+      box-shadow: 0 4px 15px #0002;
+      text-align: center;
+    }
+    button {
+      background: linear-gradient(135deg, #FF3B30 0%, #ff6b5e 100%);
+      color: #fff;
+      font-size: 1.6em;
+      border: none;
+      border-radius: 15px;
+      padding: 1.2em 2em;
+      cursor: pointer;
+      box-shadow: 0 8px 25px #ff3b30aa;
+      margin-top: 1em;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      min-width: 250px;
+    }
+    button:hover {
+      background: linear-gradient(135deg, #ffb330 0%, #ffc85e 100%);
+      color: #222;
+      transform: translateY(-2px);
+    }
+    #resultado {
+      margin-top: 2em;
+      background: #222;
+      border-radius: 20px;
+      padding: 2em 1em;
+      box-shadow: 0 8px 25px #0004;
+      max-width: 95vw;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5em;
+    }
+    .dados-comanda {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1em;
+      width: 100%;
+      max-width: 600px;
+    }
+    .dado-item {
+      background: #333;
+      padding: 1.5em;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 4px 15px #0002;
+    }
+    .dado-label {
+      font-size: 1em;
+      color: #ffb330;
+      margin-bottom: 0.5em;
+      font-weight: bold;
+    }
+    .dado-valor {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #fff;
+    }
+    .restantes {
+      color: #4CAF50;
+    }
+    .adicionadas {
+      color: #FF9800;
+    }
+    .erro {
+      color: #ff3b30;
+      font-weight: bold;
+      margin-top: 1em;
+      font-size: 1.2em;
+    }
+    .voltar-btn {
+      background: linear-gradient(135deg, #666 0%, #888 100%);
+      color: #fff;
+      font-size: 1.3em;
+      border: none;
+      border-radius: 15px;
+      padding: 1em 2em;
+      cursor: pointer;
+      box-shadow: 0 4px 15px #0004;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 1em;
+    }
+    .voltar-btn:hover {
+      background: linear-gradient(135deg, #888 0%, #aaa 100%);
+      transform: translateY(-2px);
+    }
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2.2em;
+      }
+      .formulario {
+        padding: 1.5em 0.5em;
+      }
+      select, input[type="number"], input[type="password"] {
+        font-size: 1.2em;
+        padding: 0.8em;
+      }
+      button {
+        font-size: 1.4em;
+        padding: 1em 1.5em;
+        min-width: 200px;
+      }
+      label {
+        font-size: 1.3em;
+      }
+      .dados-comanda {
+        grid-template-columns: 1fr;
+        gap: 0.8em;
+      }
+      .dado-item {
+        padding: 1.2em;
+      }
+      .dado-valor {
+        font-size: 1.6em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="conteudo-central">
+    <h1>🍺 Adicionar Fichas</h1>
+    <form class="formulario" id="formSenha">
+      <label for="senha">Senha de acesso:</label>
+      <input type="password" id="senha" name="senha" required autocomplete="off" placeholder="Digite a senha" />
+      <button type="submit">Entrar</button>
+      <div class="erro" id="erroSenha" style="display:none;"></div>
+    </form>
+    
+    <a href="admin.html" class="voltar-btn" style="margin-top: 1em;">← Voltar ao Menu</a>
+    <form class="formulario" id="formFichas" style="display:none;">
+      <label for="comanda">Selecionar Comanda:</label>
+      <select id="comanda" name="comanda" required>
+        <option value="">Carregando comandas...</option>
+      </select>
+      
+      <label for="latas">Fichas Lata para adicionar:</label>
+      <input type="number" id="latas" name="latas" min="0" max="99" value="0" placeholder="0" />
+      
+      <label for="quentao">Fichas Quentão para adicionar:</label>
+      <input type="number" id="quentao" name="quentao" min="0" max="99" value="0" placeholder="0" />
+      
+      <button type="submit">Adicionar Fichas</button>
+      <div class="erro" id="erroFichas" style="display:none;"></div>
+    </form>
+    
+    <a href="admin.html" class="voltar-btn" id="voltarFormFichas" style="display:none;">← Voltar ao Menu</a>
+    <div id="resultado">
+      <h2 id="nomeComanda">Nome da Comanda</h2>
+      <div class="dados-comanda">
+        <div class="dado-item">
+          <div class="dado-label">Latas Adicionadas</div>
+          <div class="dado-valor adicionadas" id="latasAdicionadas">0</div>
+        </div>
+        <div class="dado-item">
+          <div class="dado-label">Total Latas</div>
+          <div class="dado-valor" id="totalLatas">0</div>
+        </div>
+        <div class="dado-item">
+          <div class="dado-label">Latas Validadas</div>
+          <div class="dado-valor" id="latasValidadas">0</div>
+        </div>
+        <div class="dado-item">
+          <div class="dado-label">Latas Restantes</div>
+          <div class="dado-valor restantes" id="latasRestantes">0</div>
+        </div>
+        <div class="dado-item">
+          <div class="dado-label">Quentão Adicionado</div>
+          <div class="dado-valor adicionadas" id="quentaoAdicionado">0</div>
+        </div>
+        <div class="dado-item">
+          <div class="dado-label">Total Quentão</div>
+          <div class="dado-valor" id="totalQuentao">0</div>
+        </div>
+        <div class="dado-item">
+          <div class="dado-label">Quentão Validado</div>
+          <div class="dado-valor" id="quentaoValidado">0</div>
+        </div>
+        <div class="dado-item">
+          <div class="dado-label">Quentão Restante</div>
+          <div class="dado-valor restantes" id="quentaoRestante">0</div>
+        </div>
+      </div>
+      <a href="admin.html" class="voltar-btn">← Voltar ao Menu</a>
+    </div>
+  </div>
+
+  <script>
+    // Controle de senha
+    const senhaCorreta = "123polo321";
+    const formSenha = document.getElementById("formSenha");
+    const formFichas = document.getElementById("formFichas");
+    const erroSenha = document.getElementById("erroSenha");
+    
+    formSenha.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const senha = document.getElementById("senha").value;
+      if (senha === senhaCorreta) {
+        // Salvar senha no localStorage
+        localStorage.setItem('admin_senha', senha);
+        localStorage.setItem('admin_logado', 'true');
+        
+        formSenha.style.display = "none";
+        formFichas.style.display = "flex";
+        document.getElementById("voltarFormFichas").style.display = "inline-block";
+        erroSenha.style.display = "none";
+        carregarComandas();
+      } else {
+        erroSenha.innerText = "Senha incorreta!";
+        erroSenha.style.display = "block";
+      }
+    });
+
+    // Verificar se já está logado
+    function verificarLogin() {
+      const senhaSalva = localStorage.getItem('admin_senha');
+      const logado = localStorage.getItem('admin_logado');
+      
+      if (senhaSalva === senhaCorreta && logado === 'true') {
+        formSenha.style.display = "none";
+        formFichas.style.display = "flex";
+        document.getElementById("voltarFormFichas").style.display = "inline-block";
+        erroSenha.style.display = "none";
+        carregarComandas();
+      }
+    }
+
+    // Executar verificação ao carregar
+    verificarLogin();
+
+    // Carregar comandas
+    async function carregarComandas() {
+      try {
+        const resp = await fetch('listar_comandas.php');
+        const data = await resp.json();
+        const select = document.getElementById('comanda');
+        select.innerHTML = '<option value="">Selecione uma comanda...</option>';
+        
+        data.comandas.forEach(comanda => {
+          const option = document.createElement('option');
+          option.value = comanda.id;
+          option.textContent = `${comanda.nome} (${comanda.id})`;
+          select.appendChild(option);
+        });
+      } catch (err) {
+        console.error('Erro ao carregar comandas:', err);
+      }
+    }
+
+    // Submissão do formulário
+    document.getElementById('formFichas').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const comandaId = document.getElementById('comanda').value;
+      const latas = parseInt(document.getElementById('latas').value) || 0;
+      const quentao = parseInt(document.getElementById('quentao').value) || 0;
+      const erroFichas = document.getElementById('erroFichas');
+      
+      erroFichas.style.display = 'none';
+      
+      if (!comandaId) {
+        erroFichas.innerText = 'Selecione uma comanda!';
+        erroFichas.style.display = 'block';
+        return;
+      }
+      
+      if (latas === 0 && quentao === 0) {
+        erroFichas.innerText = 'Adicione pelo menos uma ficha!';
+        erroFichas.style.display = 'block';
+        return;
+      }
+      
+      try {
+        const resp = await fetch('adicionar_fichas_backend.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `id=${encodeURIComponent(comandaId)}&latas=${encodeURIComponent(latas)}&quentao=${encodeURIComponent(quentao)}`
+        });
+        const data = await resp.json();
+        
+        if (data.sucesso) {
+          document.getElementById('resultado').style.display = 'flex';
+          document.getElementById('nomeComanda').textContent = data.nome;
+          document.getElementById('latasAdicionadas').textContent = latas;
+          document.getElementById('totalLatas').textContent = data.totalLatas;
+          document.getElementById('latasValidadas').textContent = data.validadas;
+          document.getElementById('latasRestantes').textContent = data.totalLatas - data.validadas;
+          document.getElementById('quentaoAdicionado').textContent = quentao;
+          document.getElementById('totalQuentao').textContent = data.totalQuentao;
+          document.getElementById('quentaoValidado').textContent = data.validados;
+          document.getElementById('quentaoRestante').textContent = data.totalQuentao - data.validados;
+          
+          // Limpar formulário
+          document.getElementById('latas').value = '0';
+          document.getElementById('quentao').value = '0';
+        } else {
+          erroFichas.innerText = data.erro || 'Erro ao adicionar fichas.';
+          erroFichas.style.display = 'block';
+        }
+      } catch (err) {
+        erroFichas.innerText = 'Erro de conexão.';
+        erroFichas.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html> 

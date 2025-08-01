@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>🎉 Controle de Latas 🥤</title>
+  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #181818;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      width: 100%;
+    }
+    
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5em;
+      min-height: 100vh;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5em;
+    }
+    
+    h1 {
+      font-size: 2.2em;
+      margin: 0;
+      color: #FF3B30;
+      text-align: center;
+      font-weight: 900;
+    }
+    
+    #info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1em;
+      width: 100%;
+    }
+    
+    #info img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 4px solid #fff;
+      object-fit: cover;
+      background: #111;
+      box-shadow: 0 2px 12px #0006;
+    }
+    
+    #texto-info {
+      font-size: 1.8em;
+      color: #fff;
+      text-align: center;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: capitalize;
+    }
+    
+    #instrucoes {
+      background: linear-gradient(90deg, #222 60%, #333 100%);
+      border-radius: 18px;
+      padding: 1.5em;
+      border: 2px solid #ffb33044;
+      box-shadow: 0 2px 12px #0004;
+      text-align: center;
+      width: 100%;
+    }
+    
+    #instrucoes > div:first-child {
+      font-size: 1.5em;
+      margin-bottom: 0.5em;
+      font-weight: bold;
+    }
+    
+    #produtos-disponiveis {
+      background: linear-gradient(90deg, #222 60%, #333 100%);
+      border-radius: 18px;
+      border: 2px solid #ffb33044;
+      box-shadow: 0 2px 12px #0004;
+      padding: 1.5em;
+      width: 100%;
+      display: none;
+    }
+    
+    .produtos-titulo {
+      font-size: 1.5em;
+      margin-bottom: 1em;
+      color: #ffb330;
+      font-weight: bold;
+      text-align: center;
+    }
+    
+    .produtos-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5em;
+      margin-bottom: 1em;
+    }
+    
+    .produto-card {
+      background: #333;
+      padding: 1.5em;
+      border-radius: 15px;
+      text-align: center;
+    }
+    
+    .produto-label {
+      font-size: 1.4em;
+      margin-bottom: 0.5em;
+    }
+    
+    .produto-valor {
+      font-size: 2.2em;
+      font-weight: bold;
+      color: #ffb330;
+    }
+    
+    .produto-card.disabled {
+      opacity: 0.5;
+    }
+    
+    .botoes-qrcode {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+      width: 100%;
+    }
+    
+    .btn-qrcode {
+      background: #FF3B30;
+      color: #fff;
+      font-size: 3em;
+      border: none;
+      border-radius: 15px;
+      padding: 1.2em;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+    }
+    
+    .btn-qrcode:hover {
+      background: #ffb330;
+      color: #222;
+    }
+    
+    .btn-qrcode:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .btn-qrcode:disabled:hover {
+      background: #FF3B30;
+      color: #fff;
+    }
+    
+    #qrcode {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin-top: 1em;
+    }
+    
+    #gif-polo {
+      width: 100%;
+      text-align: center;
+    }
+    
+    #gif-polo img {
+      max-width: 100%;
+      border-radius: 18px;
+      box-shadow: 0 0 18px #ff3b30cc;
+    }
+    
+    .btn-toggle-historico {
+      background: linear-gradient(135deg, #666 0%, #888 100%);
+      color: #fff;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 15px;
+      padding: 1em 1.5em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: bold;
+      width: 100%;
+    }
+    
+    .btn-toggle-historico:hover {
+      background: linear-gradient(135deg, #888 0%, #aaa 100%);
+      transform: translateY(-2px);
+    }
+    
+    #historico-consumo {
+      background: linear-gradient(90deg, #222 60%, #333 100%);
+      border-radius: 18px;
+      border: 2px solid #ffb33044;
+      box-shadow: 0 2px 12px #0004;
+      padding: 1.5em;
+      width: 100%;
+      display: none;
+    }
+    
+    .historico-titulo {
+      font-size: 1.5em;
+      margin-bottom: 1em;
+      color: #ffb330;
+      font-weight: bold;
+      text-align: center;
+    }
+    
+    .btn-historico {
+      background: #ffb330;
+      color: #222;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 15px;
+      padding: 1em 1.5em;
+      cursor: pointer;
+      margin: 0.5em 0;
+      transition: background 0.2s;
+      width: 100%;
+    }
+    
+    .btn-historico:hover {
+      background: #ff3b30;
+      color: #fff;
+    }
+    
+    .historico-item {
+      background: #333;
+      margin: 0.8em 0;
+      padding: 1.2em;
+      border-radius: 15px;
+      border-left: 4px solid #ffb330;
+      font-size: 1em;
+    }
+    
+    .historico-data {
+      color: #ffb330;
+      font-weight: bold;
+      font-size: 0.9em;
+    }
+    
+    .historico-tipo {
+      font-weight: bold;
+      margin: 0.3em 0;
+      font-size: 1.1em;
+    }
+    
+    .historico-descricao {
+      color: #ccc;
+      font-size: 0.95em;
+    }
+    
+    .historico-vazio {
+      text-align: center;
+      color: #888;
+      font-style: italic;
+      padding: 1.5em;
+      font-size: 1.1em;
+    }
+    
+    footer {
+      margin-top: 2em;
+      text-align: center;
+      width: 100%;
+    }
+    
+    footer a {
+      display: block;
+      margin: 1.2em auto;
+      background: linear-gradient(90deg, #ffb330 60%, #ff3b30 100%);
+      color: #181818;
+      font-weight: bold;
+      font-size: 1.4em;
+      border-radius: 18px;
+      padding: 1.2em 0.8em;
+      text-decoration: none;
+      box-shadow: 0 2px 12px #0004;
+      letter-spacing: 1px;
+      transition: background 0.2s;
+    }
+    
+    footer a:hover {
+      background: linear-gradient(90deg, #ff3b30 60%, #ffb330 100%);
+    }
+    
+    @media (max-width: 480px) {
+      body {
+        padding: 0.3em;
+      }
+      
+      .container {
+        gap: 1.2em;
+      }
+      
+      h1 {
+        font-size: 2em;
+      }
+      
+      #info img {
+        width: 100px;
+        height: 100px;
+      }
+      
+      #texto-info {
+        font-size: 1.6em;
+      }
+      
+      .produtos-grid {
+        grid-template-columns: 1fr;
+        gap: 1em;
+      }
+      
+      .produto-card {
+        padding: 1.2em;
+      }
+      
+      .produto-label {
+        font-size: 1.3em;
+      }
+      
+      .produto-valor {
+        font-size: 2em;
+      }
+      
+      .btn-qrcode {
+        font-size: 2.5em;
+        padding: 1em;
+      }
+      
+      .btn-toggle-historico {
+        font-size: 1.1em;
+        padding: 0.8em 1.2em;
+      }
+      
+      .btn-historico {
+        font-size: 1.1em;
+        padding: 0.8em 1.2em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎉 Controle de Latas & Quentão 🥃</h1>
+    
+    <div id="info">
+      <img id="foto" src="" alt="Foto do participante" />
+      <div id="texto-info">🔍 Carregando seu ID...</div>
+    </div>
+    
+    <div id="instrucoes">
+      <div>📲 <b>Como usar</b> 🍻</div>
+      <div>1️⃣ Toque em um dos botões <span style="font-size:1.2em;">🍺</span> ou <span style="font-size:1.2em;">🍷</span> para gerar seu QR Code.</div>
+      <div>2️⃣ Mostre o QR para o atendimento da <b>Suely</b>.</div>
+      <div>3️⃣ <b>Só será descontado quando o QR for lido!</b></div>
+      <div style="font-size:1.1em; color:#ffb330; margin-top:0.3em;">Pode gerar quantos quiser, mas só vale na hora do atendimento! 😉</div>
+    </div>
+    
+    <div id="produtos-disponiveis">
+      <div class="produtos-titulo">🍺 Seus Produtos Disponíveis</div>
+      <div class="produtos-grid">
+        <div id="latas-info" class="produto-card">
+          <div class="produto-label">🍺 Latas</div>
+          <div id="latas-valor" class="produto-valor">-</div>
+        </div>
+        <div id="quentao-info" class="produto-card">
+          <div class="produto-label">🍷 Quentão</div>
+          <div id="quentao-valor" class="produto-valor">-</div>
+        </div>
+      </div>
+      <button class="btn-toggle-historico" onclick="toggleHistorico()">
+        📊 Ver Meu Histórico
+      </button>
+    </div>
+    
+    <div id="historico-consumo">
+      <div class="historico-titulo">📊 Seu Histórico de Consumo</div>
+      <button class="btn-historico" onclick="carregarHistorico()">🔄 Atualizar Histórico</button>
+      <button class="btn-toggle-historico" onclick="toggleHistorico()" style="background:linear-gradient(135deg,#ff3b30 0%,#ff6b5e 100%);">❌ Ocultar Histórico</button>
+      <div id="historico-lista"></div>
+    </div>
+   
+    <div class="botoes-qrcode">
+      <button class="btn-qrcode" onclick="gerarQRCode('cerveja')" title="Gerar QR Code de cerveja">🍺</button>
+      <button class="btn-qrcode" onclick="gerarQRCode('quentao')" title="Gerar QR Code de quentão">🍷</button>
+    </div>
+    
+    <div id="gif-ou-qrcode">
+      <div id="gif-polo"></div>
+      <div id="qrcode" style="display:none;"></div>
+    </div>
+  </div>
+
+  <footer>
+    <a href="placar.html">
+      🏑 Acompanhe os jogos de Bike Polo ao vivo!<br>
+      <span style="font-size:0.9em; color:#fff; font-weight:normal;">Ver placar e tempo em tempo real</span>
+    </a>
+    <div style="margin-top: 1em; color: #ffb330; font-size: 0.9em;">
+      Feito com 💻 e 🍺 por alguém com sede
+    </div>
+  </footer>
+
+  <script>
+    const secret = "segredo_compartilhado";
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+    const foto = document.getElementById("foto");
+    const textoInfo = document.getElementById("texto-info");
+
+    function carregarFoto(id) {
+      const caminhoFoto = `./pics/${id}.png`;
+      const caminhoFallback = "./pics/nofoto.png";
+      foto.src = caminhoFoto;
+      foto.onerror = () => {
+        foto.src = caminhoFallback;
+      };
+    }
+
+    function nomeBonito(id) {
+      if (!id) return '';
+      let partes = id.split('_');
+      if (partes.length > 1) partes.pop();
+      let nome = partes.join(' ');
+      return nome.replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    if (!id) {
+      textoInfo.innerText = "⚠️ Nome não especificado!";
+      foto.style.display = "none";
+    } else {
+      textoInfo.innerText = nomeBonito(id);
+      carregarFoto(id);
+      foto.style.display = "inline-block";
+      carregarDadosComanda(id);
+    }
+
+    // GIF aleatório de polo
+    const gifsPolo = [
+      'gifs/polo/yikes-bike.gif',
+      'gifs/polo/kfc-bike.gif',
+      'gifs/polo/tox1c.gif',
+      'gifs/polo/chico-servicial.gif',
+      'gifs/polo/bike-polo-polo.gif',
+      'gifs/polo/wadedotphoto-wade (2).gif',
+      'gifs/polo/velopolo-bikepolo.gif',
+      'gifs/polo/bike-polo-bicipolo.gif',
+      'gifs/polo/wadedotphoto-wade (1).gif',
+      'gifs/polo/wadedotphoto-wade.gif'
+    ];
+    
+    function gifPoloAleatorio() {
+      const idx = Math.floor(Math.random() * gifsPolo.length);
+      return gifsPolo[idx];
+    }
+    
+    const gifDiv = document.getElementById('gif-polo');
+    if (gifDiv) {
+      const gif = gifPoloAleatorio();
+      gifDiv.innerHTML = `<img src="${gif}" alt="gif polo">`;
+    }
+
+    async function carregarDadosComanda(id) {
+      try {
+        const resp = await fetch('listar_comandas.php');
+        const data = await resp.json();
+        
+        if (data.sucesso) {
+          const comanda = data.comandas.find(c => c.id === id);
+          if (comanda) {
+            const latasRestantes = comanda.totalLatas - comanda.validadas;
+            const quentaoRestante = comanda.totalQuentao - comanda.validados;
+            
+            document.getElementById('latas-valor').textContent = `${comanda.validadas}/${comanda.totalLatas}`;
+            document.getElementById('quentao-valor').textContent = `${comanda.validados}/${comanda.totalQuentao}`;
+            
+            document.getElementById('produtos-disponiveis').style.display = 'block';
+            
+            const btnLatas = document.querySelector('button[onclick*="cerveja"]');
+            const btnQuentao = document.querySelector('button[onclick*="quentao"]');
+            
+            if (latasRestantes <= 0) {
+              btnLatas.disabled = true;
+              document.getElementById('latas-info').classList.add('disabled');
+            }
+            
+            if (quentaoRestante <= 0) {
+              btnQuentao.disabled = true;
+              document.getElementById('quentao-info').classList.add('disabled');
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Erro ao carregar dados da comanda:', err);
+      }
+    }
+
+    function toggleHistorico() {
+      const produtosDisponiveis = document.getElementById('produtos-disponiveis');
+      const historicoConsumo = document.getElementById('historico-consumo');
+      const btnVerHistorico = document.querySelector('.btn-toggle-historico');
+      const btnOcultarHistorico = document.querySelector('.btn-toggle-historico:last-of-type');
+
+      if (historicoConsumo.style.display === 'none') {
+        // Mostrar histórico
+        produtosDisponiveis.style.display = 'none';
+        historicoConsumo.style.display = 'block';
+        carregarHistorico();
+      } else {
+        // Ocultar histórico
+        produtosDisponiveis.style.display = 'block';
+        historicoConsumo.style.display = 'none';
+      }
+    }
+
+    async function carregarHistorico() {
+      if (!id) return;
+      
+      try {
+        const resp = await fetch('visualizar_logs.php?action=get_json&filter=' + encodeURIComponent(id) + '&lines=1000');
+        const data = await resp.json();
+        
+        const historicoLista = document.getElementById('historico-lista');
+        const historicoContainer = document.getElementById('historico-consumo');
+        
+        if (!data || data.length === 0) {
+          historicoContainer.style.display = 'block';
+          historicoLista.innerHTML = '<div class="historico-vazio">Nenhum histórico encontrado</div>';
+          return;
+        }
+        
+        // Filtrar e organizar eventos relevantes
+        const eventos = [];
+        
+        data.forEach(log => {
+          const timestamp = log.timestamp;
+          const message = log.message;
+          
+          // Eventos de retirada
+          if (message.includes('VALIDAR_QR_LATA_SUCESSO') && message.includes(id)) {
+            const match = message.match(/Validadas: (\d+), Total: (\d+)/);
+            if (match) {
+              eventos.push({
+                tipo: 'retirada',
+                produto: '🍺 Lata',
+                quantidade: 1,
+                timestamp: timestamp,
+                detalhes: `Lata ${match[1]} de ${match[2]}`
+              });
+            }
+          }
+          
+          if (message.includes('VALIDAR_QR_QUENTAO_SUCESSO') && message.includes(id)) {
+            const match = message.match(/Validados: (\d+), Total: (\d+)/);
+            if (match) {
+              eventos.push({
+                tipo: 'retirada',
+                produto: '🍷 Quentão',
+                quantidade: 1,
+                timestamp: timestamp,
+                detalhes: `Quentão ${match[1]} de ${match[2]}`
+              });
+            }
+          }
+          
+          // Eventos de recarga
+          if (message.includes('ADICIONAR_FICHAS_LATAS') && message.includes(id)) {
+            const match = message.match(/Novas: (\d+), Total: (\d+)/);
+            if (match) {
+              eventos.push({
+                tipo: 'recarga',
+                produto: '🍺 Latas',
+                quantidade: parseInt(match[1]),
+                timestamp: timestamp,
+                detalhes: `Adicionadas ${match[1]} latas`
+              });
+            }
+          }
+          
+          if (message.includes('ADICIONAR_FICHAS_QUENTAO') && message.includes(id)) {
+            const match = message.match(/Novos: (\d+), Total: (\d+)/);
+            if (match) {
+              eventos.push({
+                tipo: 'recarga',
+                produto: '🍷 Quentão',
+                quantidade: parseInt(match[1]),
+                timestamp: timestamp,
+                detalhes: `Adicionados ${match[1]} quentões`
+              });
+            }
+          }
+          
+          // Criação da comanda
+          if (message.includes('ABRIR_COMANDA_SUCESSO') && message.includes(id)) {
+            const match = message.match(/Latas: (\d+), Quentao: (\d+)/);
+            if (match) {
+              eventos.push({
+                tipo: 'criacao',
+                produto: '🎉 Comanda Criada',
+                quantidade: 0,
+                timestamp: timestamp,
+                detalhes: `${match[1]} latas + ${match[2]} quentões`
+              });
+            }
+          }
+        });
+        
+        // Ordenar por timestamp (mais recente primeiro)
+        eventos.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        // Renderizar histórico
+        if (eventos.length === 0) {
+          historicoContainer.style.display = 'block';
+          historicoLista.innerHTML = '<div class="historico-vazio">Nenhum histórico encontrado</div>';
+          return;
+        }
+        
+        historicoContainer.style.display = 'block';
+        
+        const historicoHTML = eventos.map(evento => {
+          const data = new Date(evento.timestamp);
+          const dataFormatada = data.toLocaleString('pt-BR');
+          
+          const corTipo = evento.tipo === 'retirada' ? '#ff3b30' : 
+                         evento.tipo === 'recarga' ? '#4CAF50' : '#ffb330';
+          const iconeTipo = evento.tipo === 'retirada' ? '📤' : 
+                           evento.tipo === 'recarga' ? '📥' : '🎉';
+          
+          return `
+            <div class="historico-item" style="border-left-color: ${corTipo};">
+              <div class="historico-data">${dataFormatada}</div>
+              <div class="historico-tipo" style="color: ${corTipo};">
+                ${iconeTipo} ${evento.produto}
+              </div>
+              <div class="historico-descricao">${evento.detalhes}</div>
+            </div>
+          `;
+        }).join('');
+        
+        historicoLista.innerHTML = historicoHTML;
+        
+      } catch (err) {
+        console.error('Erro ao carregar histórico:', err);
+        const historicoContainer = document.getElementById('historico-consumo');
+        historicoContainer.style.display = 'block';
+        document.getElementById('historico-lista').innerHTML = '<div class="historico-vazio">Erro ao carregar histórico</div>';
+      }
+    }
+
+    function gerarQRCode(tipo) {
+      if (!id) return alert("ID inválido!");
+      if (!tipo) tipo = 'cerveja';
+      
+      const botao = event.target;
+      if (botao.disabled) return;
+      
+      const ts = Math.floor(Date.now() / 1000);
+      const toSign = id + ts + tipo + secret;
+      const hash = CryptoJS.SHA256(toSign).toString();
+      const url = `https://lulinucs.duckdns.org/super9/validar.php?id=${id}&ts=${ts}&tipo=${tipo}&hash=${hash}`;
+      
+      const container = document.getElementById("qrcode");
+      const gifDiv = document.getElementById("gif-polo");
+      
+      container.innerHTML = "";
+      container.style.display = "flex";
+      gifDiv.style.display = "none";
+
+      const canvas = document.createElement("canvas");
+      container.appendChild(canvas);
+
+      const qrSize = Math.min(window.innerWidth * 0.8, 300);
+      QRCode.toCanvas(canvas, url, { width: qrSize }, function (error) {
+        if (error) console.error(error);
+        console.log("🎯 QR Code gerado para:", url);
+      });
+    }
+  </script>
+</body>
+</html>

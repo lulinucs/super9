@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciar Comandas - Super9</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #181818;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      width: 100vw;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    body {
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+      padding: 0;
+    }
+    .conteudo-central {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 1em;
+    }
+    h1 {
+      font-size: 2.5em;
+      margin: 0.5em 0 1em 0;
+      color: #FF3B30;
+      font-weight: 900;
+      text-shadow: 0 0 10px #ff3b30aa;
+    }
+    .formulario {
+      background: #222;
+      border-radius: 20px;
+      padding: 2em 1em;
+      box-shadow: 0 8px 25px #0004;
+      max-width: 95vw;
+      margin: 1em auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5em;
+      align-items: center;
+    }
+    label {
+      font-size: 1.3em;
+      margin-bottom: 0.5em;
+      color: #ffb330;
+      font-weight: bold;
+    }
+    input[type="password"] {
+      padding: 1em;
+      border-radius: 15px;
+      border: none;
+      font-size: 1.3em;
+      width: 90vw;
+      max-width: 300px;
+      margin-bottom: 1em;
+      background: #181818;
+      color: #fff;
+      box-shadow: 0 4px 15px #0002;
+      text-align: center;
+    }
+    button {
+      background: linear-gradient(135deg, #FF3B30 0%, #ff6b5e 100%);
+      color: #fff;
+      font-size: 1.5em;
+      border: none;
+      border-radius: 15px;
+      padding: 1em 2em;
+      cursor: pointer;
+      box-shadow: 0 8px 25px #ff3b30aa;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      min-width: 200px;
+    }
+    button:hover {
+      background: linear-gradient(135deg, #ffb330 0%, #ffc85e 100%);
+      color: #222;
+      transform: translateY(-2px);
+    }
+    .erro {
+      color: #ff3b30;
+      font-weight: bold;
+      margin-top: 1em;
+      font-size: 1.1em;
+    }
+    .lista-comandas {
+      width: 100%;
+      max-width: 800px;
+      margin: 1em auto;
+    }
+    .comanda-item {
+      background: #222;
+      border-radius: 15px;
+      padding: 1.5em;
+      margin-bottom: 1em;
+      box-shadow: 0 4px 15px #0002;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+    .comanda-item:hover {
+      border-color: #ff3b30;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px #ff3b30aa;
+    }
+    .comanda-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1em;
+    }
+    .comanda-nome {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #ffb330;
+    }
+    .comanda-id {
+      font-size: 1.2em;
+      color: #888;
+      background: #333;
+      padding: 0.3em 0.8em;
+      border-radius: 10px;
+    }
+    .comanda-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1em;
+      margin-bottom: 1em;
+    }
+    .stat-item {
+      background: #333;
+      padding: 1em;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .stat-label {
+      font-size: 0.9em;
+      color: #888;
+      margin-bottom: 0.5em;
+    }
+    .stat-value {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #ffb330;
+    }
+    .comanda-acoes {
+      display: flex;
+      gap: 1em;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .acao-btn {
+      background: linear-gradient(135deg, #ffb330 0%, #ffc85e 100%);
+      color: #222;
+      font-size: 1em;
+      border: none;
+      border-radius: 10px;
+      padding: 0.8em 1.2em;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+    .acao-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px #ffb330aa;
+    }
+    .acao-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+    .acao-btn:disabled:hover {
+      transform: none;
+      box-shadow: none;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      backdrop-filter: blur(5px);
+    }
+    .modal-content {
+      background: #222;
+      margin: 5% auto;
+      padding: 2em;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 8px 25px #0004;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5em;
+    }
+    .modal-title {
+      font-size: 2em;
+      color: #ffb330;
+      font-weight: bold;
+    }
+    .close {
+      color: #888;
+      font-size: 2em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+    .close:hover {
+      color: #ff3b30;
+    }
+    .detalhes-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5em;
+      margin-bottom: 2em;
+    }
+    .detalhe-card {
+      background: #333;
+      padding: 1.5em;
+      border-radius: 15px;
+      text-align: center;
+    }
+    .detalhe-titulo {
+      font-size: 1.2em;
+      color: #888;
+      margin-bottom: 0.5em;
+    }
+    .detalhe-valor {
+      font-size: 2em;
+      font-weight: bold;
+      color: #ffb330;
+    }
+    .qr-section {
+      text-align: center;
+      margin: 2em 0;
+    }
+    .qr-container {
+      display: flex;
+      justify-content: center;
+      margin: 1em 0;
+    }
+    .qr-buttons {
+      display: flex;
+      gap: 1em;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1em;
+    }
+    .loading {
+      color: #ffb330;
+      font-size: 1.2em;
+      margin: 2em 0;
+    }
+    .voltar-btn {
+      background: linear-gradient(135deg, #666 0%, #888 100%);
+      color: #fff;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 15px;
+      padding: 1em 2em;
+      cursor: pointer;
+      box-shadow: 0 4px 15px #666aaa;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 1em;
+    }
+    .voltar-btn:hover {
+      background: linear-gradient(135deg, #888 0%, #aaa 100%);
+      transform: translateY(-2px);
+    }
+    .busca-container {
+      background: #222;
+      border-radius: 15px;
+      padding: 1.5em;
+      margin-bottom: 1.5em;
+      box-shadow: 0 4px 15px #0002;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      box-sizing: border-box;
+    }
+    #buscaInput {
+      width: 100%;
+      padding: 1em;
+      border-radius: 10px;
+      border: none;
+      font-size: 1.2em;
+      background: #181818;
+      color: #fff;
+      box-shadow: 0 4px 15px #0002;
+      text-align: center;
+      margin-bottom: 1em;
+      box-sizing: border-box;
+    }
+    #buscaInput:focus {
+      outline: none;
+      box-shadow: 0 4px 15px #ff3b30aa;
+    }
+    .filtros {
+      display: flex;
+      gap: 1.5em;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .filtros label {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      font-size: 1.1em;
+      color: #ffb330;
+      cursor: pointer;
+      padding: 0.5em 1em;
+      border-radius: 8px;
+      background: #333;
+      transition: all 0.3s ease;
+    }
+    .filtros label:hover {
+      background: #444;
+    }
+    .filtros input[type="checkbox"] {
+      width: 1.2em;
+      height: 1.2em;
+      accent-color: #ff3b30;
+    }
+    .comanda-item.hidden {
+      display: none;
+    }
+    .historico-section {
+      border-top: 2px solid #333;
+      padding-top: 1.5em;
+    }
+    .historico-section h3 {
+      text-align: center;
+      margin-bottom: 1em;
+    }
+    .historico-item {
+      transition: all 0.3s ease;
+    }
+    .historico-item:hover {
+      transform: translateX(5px);
+    }
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2.2em;
+      }
+      .comanda-header {
+        flex-direction: column;
+        gap: 0.5em;
+      }
+      .comanda-stats {
+        grid-template-columns: 1fr;
+      }
+      .detalhes-grid {
+        grid-template-columns: 1fr;
+      }
+      .modal-content {
+        margin: 10% auto;
+        padding: 1.5em;
+      }
+      .qr-buttons {
+        flex-direction: column;
+      }
+      .busca-container {
+        padding: 1em;
+        margin: 1em;
+      }
+      #buscaInput {
+        font-size: 1.1em;
+        padding: 0.8em;
+      }
+      .filtros {
+        flex-direction: column;
+        gap: 0.8em;
+      }
+      .filtros label {
+        font-size: 1em;
+        padding: 0.4em 0.8em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="conteudo-central">
+    <h1>📋 Gerenciar Comandas</h1>
+    
+    <form class="formulario" id="formSenha">
+      <label for="senha">Senha de acesso:</label>
+      <input type="password" id="senha" name="senha" required autocomplete="off" placeholder="Digite a senha" />
+      <button type="submit">Entrar</button>
+      <div class="erro" id="erroSenha" style="display:none;"></div>
+    </form>
+    
+    <div id="conteudoComandas" style="display:none;">
+      <div class="busca-container">
+        <input type="text" id="buscaInput" placeholder="🔍 Buscar por nome ou ID..." />
+        <div class="filtros">
+          <label>
+            <input type="checkbox" id="filtroLatas" checked />
+            🍺 Latas
+          </label>
+          <label>
+            <input type="checkbox" id="filtroQuentao" checked />
+            🍷 Quentão
+          </label>
+        </div>
+      </div>
+      <div class="loading" id="loading">Carregando comandas...</div>
+      <div class="lista-comandas" id="listaComandas"></div>
+      <a href="admin.html" class="voltar-btn">← Voltar ao Menu</a>
+    </div>
+  </div>
+
+  <!-- Modal de Detalhes -->
+  <div id="modalDetalhes" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitulo">Detalhes da Comanda</div>
+        <span class="close" onclick="fecharModal()">&times;</span>
+      </div>
+      <div id="modalConteudo">
+        <!-- Conteúdo será preenchido dinamicamente -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Controle de senha
+    const senhaCorreta = "123polo321";
+    const formSenha = document.getElementById("formSenha");
+    const conteudoComandas = document.getElementById("conteudoComandas");
+    const erroSenha = document.getElementById("erroSenha");
+    
+    formSenha.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const senha = document.getElementById("senha").value;
+      if (senha === senhaCorreta) {
+        // Salvar senha no localStorage
+        localStorage.setItem('admin_senha', senha);
+        localStorage.setItem('admin_logado', 'true');
+        
+        formSenha.style.display = "none";
+        conteudoComandas.style.display = "block";
+        erroSenha.style.display = "none";
+        carregarComandas();
+        setupBusca();
+      } else {
+        erroSenha.innerText = "Senha incorreta!";
+        erroSenha.style.display = "block";
+      }
+    });
+
+    // Verificar se já está logado
+    function verificarLogin() {
+      const senhaSalva = localStorage.getItem('admin_senha');
+      const logado = localStorage.getItem('admin_logado');
+      
+      if (senhaSalva === senhaCorreta && logado === 'true') {
+        formSenha.style.display = "none";
+        conteudoComandas.style.display = "block";
+        erroSenha.style.display = "none";
+        carregarComandas();
+        setupBusca();
+      }
+    }
+
+    // Executar verificação ao carregar
+    verificarLogin();
+
+    // Setup do sistema de busca
+    function setupBusca() {
+      const buscaInput = document.getElementById("buscaInput");
+      const filtroLatas = document.getElementById("filtroLatas");
+      const filtroQuentao = document.getElementById("filtroQuentao");
+      
+      buscaInput.addEventListener("input", filtrarComandas);
+      filtroLatas.addEventListener("change", filtrarComandas);
+      filtroQuentao.addEventListener("change", filtrarComandas);
+    }
+
+    // Filtrar comandas
+    function filtrarComandas() {
+      const busca = document.getElementById("buscaInput").value.toLowerCase();
+      const mostrarLatas = document.getElementById("filtroLatas").checked;
+      const mostrarQuentao = document.getElementById("filtroQuentao").checked;
+      
+      const comandas = document.querySelectorAll('.comanda-item');
+      
+      comandas.forEach(comanda => {
+        const nome = comanda.querySelector('.comanda-nome').textContent.toLowerCase();
+        const id = comanda.querySelector('.comanda-id').textContent.toLowerCase();
+        const stats = comanda.querySelectorAll('.stat-value');
+        
+        const temLatas = parseInt(stats[0].textContent.split('/')[1]) > 0;
+        const temQuentao = parseInt(stats[1].textContent.split('/')[1]) > 0;
+        
+        const matchBusca = nome.includes(busca) || id.includes(busca);
+        const matchLatas = mostrarLatas && temLatas;
+        const matchQuentao = mostrarQuentao && temQuentao;
+        
+        const deveMostrar = matchBusca && (matchLatas || matchQuentao);
+        
+        if (deveMostrar) {
+          comanda.classList.remove('hidden');
+        } else {
+          comanda.classList.add('hidden');
+        }
+      });
+    }
+
+    // Carregar comandas
+    async function carregarComandas() {
+      try {
+        const resp = await fetch('listar_comandas.php');
+        const data = await resp.json();
+        
+        if (data.sucesso) {
+          const lista = document.getElementById("listaComandas");
+          const loading = document.getElementById("loading");
+          
+          loading.style.display = "none";
+          lista.innerHTML = "";
+          
+          if (data.comandas.length === 0) {
+            lista.innerHTML = '<div style="color: #888; font-size: 1.2em; margin: 2em 0;">Nenhuma comanda encontrada.</div>';
+            return;
+          }
+          
+          data.comandas.forEach(comanda => {
+            const item = document.createElement('div');
+            item.className = 'comanda-item';
+            item.onclick = () => mostrarDetalhes(comanda);
+            
+            const latasRestantes = comanda.totalLatas - comanda.validadas;
+            const quentaoRestante = comanda.totalQuentao - comanda.validados;
+            
+            const botaoLataDisabled = latasRestantes <= 0 ? 'disabled' : '';
+            const botaoQuentaoDisabled = quentaoRestante <= 0 ? 'disabled' : '';
+            const estiloLataDisabled = latasRestantes <= 0 ? 'opacity: 0.5; cursor: not-allowed;' : '';
+            const estiloQuentaoDisabled = quentaoRestante <= 0 ? 'opacity: 0.5; cursor: not-allowed;' : '';
+            
+            item.innerHTML = `
+              <div class="comanda-header">
+                <div class="comanda-nome">${comanda.nome}</div>
+                <div class="comanda-id">${comanda.id}</div>
+              </div>
+              <div class="comanda-stats">
+                <div class="stat-item">
+                  <div class="stat-label">🍺 Latas</div>
+                  <div class="stat-value">${comanda.validadas}/${comanda.totalLatas}</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-label">🍷 Quentão</div>
+                  <div class="stat-value">${comanda.validados}/${comanda.totalQuentao}</div>
+                </div>
+              </div>
+              <div class="comanda-acoes">
+                <button class="acao-btn" onclick="event.stopPropagation(); gerarQRCartao('${comanda.id}')">
+                  👤 QR Cartão
+                </button>
+                <button class="acao-btn" onclick="event.stopPropagation(); descontarLata('${comanda.id}')" ${botaoLataDisabled} style="${estiloLataDisabled}">
+                  🍺 -1 Lata
+                </button>
+                <button class="acao-btn" onclick="event.stopPropagation(); descontarQuentao('${comanda.id}')" ${botaoQuentaoDisabled} style="${estiloQuentaoDisabled}">
+                  🍷 -1 Quentão
+                </button>
+              </div>
+            `;
+            
+            lista.appendChild(item);
+          });
+        } else {
+          document.getElementById("loading").innerHTML = `<div class="erro">Erro ao carregar comandas: ${data.erro}</div>`;
+        }
+      } catch (err) {
+        document.getElementById("loading").innerHTML = '<div class="erro">Erro de conexão.</div>';
+      }
+    }
+
+    // Mostrar detalhes da comanda
+    function mostrarDetalhes(comanda) {
+      const modal = document.getElementById("modalDetalhes");
+      const titulo = document.getElementById("modalTitulo");
+      const conteudo = document.getElementById("modalConteudo");
+      
+      const latasRestantes = comanda.totalLatas - comanda.validadas;
+      const quentaoRestante = comanda.totalQuentao - comanda.validados;
+      
+      titulo.textContent = `Detalhes - ${comanda.nome}`;
+      
+      conteudo.innerHTML = `
+        <div class="detalhes-grid">
+          <div class="detalhe-card">
+            <div class="detalhe-titulo">ID da Comanda</div>
+            <div class="detalhe-valor">${comanda.id}</div>
+          </div>
+          <div class="detalhe-card">
+            <div class="detalhe-titulo">Nome</div>
+            <div class="detalhe-valor">${comanda.nome}</div>
+          </div>
+          <div class="detalhe-card">
+            <div class="detalhe-titulo">🍺 Latas Consumidas</div>
+            <div class="detalhe-valor">${comanda.validadas}/${comanda.totalLatas}</div>
+          </div>
+          <div class="detalhe-card">
+            <div class="detalhe-titulo">🍷 Quentão Consumido</div>
+            <div class="detalhe-valor">${comanda.validados}/${comanda.totalQuentao}</div>
+          </div>
+          <div class="detalhe-card">
+            <div class="detalhe-titulo">🍺 Latas Restantes</div>
+            <div class="detalhe-valor">${latasRestantes}</div>
+          </div>
+          <div class="detalhe-card">
+            <div class="detalhe-titulo">🍷 Quentão Restante</div>
+            <div class="detalhe-valor">${quentaoRestante}</div>
+          </div>
+        </div>
+        
+        <div class="qr-section">
+          <h3>QR Code do Cartão</h3>
+          <div class="qr-buttons">
+            <button class="acao-btn" onclick="gerarQRCartao('${comanda.id}')">
+              👤 Gerar QR Cartão
+            </button>
+          </div>
+          <div id="qrCodeContainer"></div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2em;">
+          <button class="acao-btn" onclick="acessarCartao('${comanda.id}')">
+            👤 Acessar Cartão da Pessoa
+          </button>
+        </div>
+        
+        <div class="historico-section" style="margin-top: 2em;">
+          <h3 style="color: #ffb330; margin-bottom: 1em;">📊 Histórico de Consumo</h3>
+          <div id="historicoContainer" style="text-align: center; color: #888;">
+            Carregando histórico...
+          </div>
+        </div>
+      `;
+      
+      modal.style.display = "block";
+      carregarHistorico(comanda.id);
+    }
+
+    // Fechar modal
+    function fecharModal() {
+      document.getElementById("modalDetalhes").style.display = "none";
+      document.getElementById("qrCodeContainer").innerHTML = "";
+    }
+
+    // Fechar modal ao clicar fora
+    window.onclick = function(event) {
+      const modal = document.getElementById("modalDetalhes");
+      if (event.target === modal) {
+        fecharModal();
+      }
+    }
+
+    // Acessar cartão da pessoa
+    function acessarCartao(id) {
+      const url = `https://lulinucs.duckdns.org/super9/?id=${encodeURIComponent(id)}`;
+      window.open(url, '_blank');
+    }
+
+    // Gerar QR Code do Cartão
+    function gerarQRCartao(id) {
+      const url = `https://lulinucs.duckdns.org/super9/?id=${encodeURIComponent(id)}`;
+      
+      // Criar modal temporário para mostrar o QR
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.8);
+        backdrop-filter: blur(5px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      `;
+      
+      const modalContent = document.createElement('div');
+      modalContent.style.cssText = `
+        background: #222;
+        padding: 2em;
+        border-radius: 20px;
+        text-align: center;
+        max-width: 90vw;
+        max-height: 80vh;
+        overflow-y: auto;
+      `;
+      
+      modalContent.innerHTML = `
+        <h3 style="color: #ffb330; margin-bottom: 1em;">QR Code do Cartão</h3>
+        <div id="qrTempContainer"></div>
+        <button onclick="this.parentElement.parentElement.remove()" style="margin-top: 1em; background: #ff3b30; color: white; border: none; padding: 0.8em 1.5em; border-radius: 10px; cursor: pointer;">Fechar</button>
+      `;
+      
+      modal.appendChild(modalContent);
+      document.body.appendChild(modal);
+      
+      const container = document.getElementById("qrTempContainer");
+      const canvas = document.createElement('canvas');
+      QRCode.toCanvas(canvas, url, { width: 200 }, function (error) {
+        if (!error) {
+          container.appendChild(canvas);
+          
+          // Adicionar link para copiar
+          const linkDiv = document.createElement('div');
+          linkDiv.style.marginTop = '1em';
+          linkDiv.innerHTML = `
+            <div style="font-size: 0.9em; color: #888; margin-bottom: 0.5em;">Link do Cartão:</div>
+            <div style="word-break: break-all; font-size: 0.8em; color: #ffb330; background: #333; padding: 0.5em; border-radius: 5px;">${url}</div>
+          `;
+          container.appendChild(linkDiv);
+        }
+      });
+    }
+
+    // Descontar Lata
+    async function descontarLata(id) {
+      // Verificar se o botão está desabilitado
+      const botao = event.target;
+      if (botao.disabled) return;
+      
+      if (!confirm('Confirmar desconto de 1 lata?')) return;
+      
+      try {
+        const resp = await fetch('validar.php', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        });
+        
+        // Gerar URL de validação
+        const ts = Math.floor(Date.now() / 1000);
+        const tipo = 'cerveja';
+        const secret = 'segredo_compartilhado';
+        const hash = CryptoJS.SHA256(id + ts + tipo + secret).toString();
+        
+        const url = `validar.php?id=${encodeURIComponent(id)}&ts=${ts}&tipo=${tipo}&hash=${hash}`;
+        
+        // Fazer requisição para validar
+        const validarResp = await fetch(url);
+        
+        if (validarResp.ok) {
+          alert('Lata descontada com sucesso!');
+          carregarComandas(); // Recarrega a lista
+        } else {
+          alert('Erro ao descontar lata. Verifique se ainda há latas disponíveis.');
+        }
+      } catch (err) {
+        alert('Erro de conexão ao descontar lata.');
+      }
+    }
+
+    // Carregar histórico de consumo
+    async function carregarHistorico(id) {
+      try {
+        const resp = await fetch('visualizar_logs.php?action=get_json&filter=' + encodeURIComponent(id) + '&lines=1000');
+        const data = await resp.json();
+        
+        const container = document.getElementById('historicoContainer');
+        
+        if (!data || data.length === 0) {
+          container.innerHTML = '<div style="color: #888; font-size: 1.1em;">Nenhum histórico encontrado.</div>';
+          return;
+        }
+        
+        // Filtrar e organizar eventos relevantes
+        const eventos = [];
+        
+        data.forEach(log => {
+          const timestamp = log.timestamp;
+          const message = log.message;
+          
+          // Eventos de retirada
+          if (message.includes('VALIDAR_QR_LATA_SUCESSO') && message.includes(id)) {
+            const match = message.match(/Validadas: (\d+), Total: (\d+)/);
+            if (match) {
+              eventos.push({
+                tipo: 'retirada',
+                produto: '🍺 Lata',
+                quantidade: 1,
+                timestamp: timestamp,
+                detalhes: `Lata ${match[1]} de ${match[2]}`
+              });
+            }
+          }
+          
+          if (message.includes('VALIDAR_QR_QUENTAO_SUCESSO') && message.includes(id)) {
+            const match = message.match(/Validados: (\d+), Total: (\d+)/);
+            if (match) {
+              eventos.push({
+                tipo: 'retirada',
+                produto: '🍷 Quentão',
+                quantidade: 1,
+                timestamp: timestamp,
+                detalhes: `Quentão ${match[1]} de ${match[2]}`
+              });
+            }
+          }
+          
+          // Eventos de recarga
+          if (message.includes('ADICIONAR_FICHAS_LATAS') && message.includes(id)) {
+            const match = message.match(/Novas: (\d+), Total: (\d+)/);
+            if (match) {
+              eventos.push({
+                tipo: 'recarga',
+                produto: '🍺 Latas',
+                quantidade: parseInt(match[1]),
+                timestamp: timestamp,
+                detalhes: `Adicionadas ${match[1]} latas`
+              });
+            }
+          }
+          
+          if (message.includes('ADICIONAR_FICHAS_QUENTAO') && message.includes(id)) {
+            const match = message.match(/Novos: (\d+), Total: (\d+)/);
+            if (match) {
+              eventos.push({
+                tipo: 'recarga',
+                produto: '🍷 Quentão',
+                quantidade: parseInt(match[1]),
+                timestamp: timestamp,
+                detalhes: `Adicionados ${match[1]} quentões`
+              });
+            }
+          }
+          
+          // Criação da comanda
+          if (message.includes('ABRIR_COMANDA_SUCESSO') && message.includes(id)) {
+            const match = message.match(/Latas: (\d+), Quentao: (\d+)/);
+            if (match) {
+              eventos.push({
+                tipo: 'criacao',
+                produto: '🎉 Comanda Criada',
+                quantidade: 0,
+                timestamp: timestamp,
+                detalhes: `${match[1]} latas + ${match[2]} quentões`
+              });
+            }
+          }
+        });
+        
+        // Ordenar por timestamp (mais recente primeiro)
+        eventos.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        // Renderizar histórico
+        if (eventos.length === 0) {
+          container.innerHTML = '<div style="color: #888; font-size: 1.1em;">Nenhum histórico encontrado.</div>';
+          return;
+        }
+        
+        const historicoHTML = eventos.map(evento => {
+          const data = new Date(evento.timestamp);
+          const dataFormatada = data.toLocaleString('pt-BR');
+          
+          const corTipo = evento.tipo === 'retirada' ? '#ff3b30' : 
+                         evento.tipo === 'recarga' ? '#4CAF50' : '#ffb330';
+          const iconeTipo = evento.tipo === 'retirada' ? '📤' : 
+                           evento.tipo === 'recarga' ? '📥' : '🎉';
+          
+          return `
+            <div style="
+              background: #333; 
+              padding: 1em; 
+              border-radius: 10px; 
+              margin-bottom: 0.8em;
+              border-left: 4px solid ${corTipo};
+              text-align: left;
+            ">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5em;">
+                <div style="font-weight: bold; color: ${corTipo};">
+                  ${iconeTipo} ${evento.produto}
+                </div>
+                <div style="font-size: 0.9em; color: #888;">
+                  ${dataFormatada}
+                </div>
+              </div>
+              <div style="color: #fff; font-size: 0.95em;">
+                ${evento.detalhes}
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+        container.innerHTML = `
+          <div style="max-height: 300px; overflow-y: auto; padding-right: 0.5em;">
+            ${historicoHTML}
+          </div>
+        `;
+        
+      } catch (err) {
+        document.getElementById('historicoContainer').innerHTML = 
+          '<div style="color: #ff3b30; font-size: 1.1em;">Erro ao carregar histórico.</div>';
+      }
+    }
+
+    // Descontar Quentão
+    async function descontarQuentao(id) {
+      // Verificar se o botão está desabilitado
+      const botao = event.target;
+      if (botao.disabled) return;
+      
+      if (!confirm('Confirmar desconto de 1 quentão?')) return;
+      
+      try {
+        // Gerar URL de validação
+        const ts = Math.floor(Date.now() / 1000);
+        const tipo = 'quentao';
+        const secret = 'segredo_compartilhado';
+        const hash = CryptoJS.SHA256(id + ts + tipo + secret).toString();
+        
+        const url = `validar.php?id=${encodeURIComponent(id)}&ts=${ts}&tipo=${tipo}&hash=${hash}`;
+        
+        // Fazer requisição para validar
+        const validarResp = await fetch(url);
+        
+        if (validarResp.ok) {
+          alert('Quentão descontado com sucesso!');
+          carregarComandas(); // Recarrega a lista
+        } else {
+          alert('Erro ao descontar quentão. Verifique se ainda há quentão disponível.');
+        }
+      } catch (err) {
+        alert('Erro de conexão ao descontar quentão.');
+      }
+    }
+  </script>
+</body>
+</html> 

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abrir Comanda - Super9</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #181818;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      width: 100vw;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    body {
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+      padding: 0;
+    }
+    .conteudo-central {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 1em;
+    }
+    h1 {
+      font-size: 2.5em;
+      margin: 0.5em 0 0.5em 0;
+      color: #FF3B30;
+      font-weight: 900;
+      text-shadow: 0 0 10px #ff3b30aa;
+    }
+    .formulario {
+      background: #222;
+      border-radius: 20px;
+      padding: 2em 1em;
+      box-shadow: 0 8px 25px #0004;
+      max-width: 95vw;
+      margin: 1em auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5em;
+      align-items: center;
+    }
+    label {
+      font-size: 1.4em;
+      margin-bottom: 0.5em;
+      color: #ffb330;
+      font-weight: bold;
+    }
+    input[type="text"], input[type="number"], input[type="password"] {
+      padding: 1em;
+      border-radius: 15px;
+      border: none;
+      font-size: 1.3em;
+      width: 90vw;
+      max-width: 350px;
+      margin-bottom: 0.5em;
+      background: #181818;
+      color: #fff;
+      box-shadow: 0 4px 15px #0002;
+      text-align: center;
+    }
+    button {
+      background: linear-gradient(135deg, #FF3B30 0%, #ff6b5e 100%);
+      color: #fff;
+      font-size: 1.6em;
+      border: none;
+      border-radius: 15px;
+      padding: 1.2em 2em;
+      cursor: pointer;
+      box-shadow: 0 8px 25px #ff3b30aa;
+      margin-top: 1em;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      min-width: 250px;
+    }
+    button:hover {
+      background: linear-gradient(135deg, #ffb330 0%, #ffc85e 100%);
+      color: #222;
+      transform: translateY(-2px);
+    }
+    #resultado {
+      margin-top: 2em;
+      background: #222;
+      border-radius: 20px;
+      padding: 2em 1em;
+      box-shadow: 0 8px 25px #0004;
+      max-width: 95vw;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5em;
+    }
+    #qrcode {
+      margin-top: 1em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #qrcode canvas {
+      max-width: 90vw;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px #0004;
+    }
+    .erro {
+      color: #ff3b30;
+      font-weight: bold;
+      margin-top: 1em;
+      font-size: 1.2em;
+    }
+    .link-resultado {
+      color: #ffb330;
+      font-size: 1.3em;
+      font-weight: bold;
+      word-break: break-all;
+      padding: 1em;
+      background: #333;
+      border-radius: 15px;
+      margin: 1em 0;
+    }
+    .voltar-btn {
+      background: linear-gradient(135deg, #666 0%, #888 100%);
+      color: #fff;
+      font-size: 1.3em;
+      border: none;
+      border-radius: 15px;
+      padding: 1em 2em;
+      cursor: pointer;
+      box-shadow: 0 4px 15px #0004;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 1em;
+    }
+    .voltar-btn:hover {
+      background: linear-gradient(135deg, #888 0%, #aaa 100%);
+      transform: translateY(-2px);
+    }
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2.2em;
+      }
+      .formulario {
+        padding: 1.5em 0.5em;
+      }
+      input[type="text"], input[type="number"], input[type="password"] {
+        font-size: 1.2em;
+        padding: 0.8em;
+      }
+      button {
+        font-size: 1.4em;
+        padding: 1em 1.5em;
+        min-width: 200px;
+      }
+      label {
+        font-size: 1.3em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="conteudo-central">
+    <h1>🔑 Abrir Comanda</h1>
+    <form class="formulario" id="formSenha">
+      <label for="senha">Senha de acesso:</label>
+      <input type="password" id="senha" name="senha" required autocomplete="off" placeholder="Digite a senha" />
+      <button type="submit">Entrar</button>
+      <div class="erro" id="erroSenha" style="display:none;"></div>
+    </form>
+    
+    <a href="admin.html" class="voltar-btn" style="margin-top: 1em;">← Voltar ao Menu</a>
+    <form class="formulario" id="formComanda" style="display:none;">
+      <label for="id">ID:</label>
+      <input type="text" id="id" name="id" required maxlength="32" autocomplete="off" placeholder="Digite o ID" />
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" required maxlength="32" autocomplete="off" placeholder="Digite o nome" />
+      <label for="latas">Fichas Lata:</label>
+      <input type="number" id="latas" name="latas" required min="0" max="99" placeholder="0" />
+      <label for="quentao">Fichas Quentão:</label>
+      <input type="number" id="quentao" name="quentao" required min="0" max="99" placeholder="0" />
+      <button type="submit">Abrir Comanda</button>
+      <div class="erro" id="erroComanda" style="display:none;"></div>
+    </form>
+    
+    <a href="admin.html" class="voltar-btn" id="voltarFormComanda" style="display:none;">← Voltar ao Menu</a>
+    <div id="resultado">
+      <div class="link-resultado" id="link"></div>
+      <div id="qrcode"></div>
+      <a href="admin.html" class="voltar-btn">← Voltar ao Menu</a>
+    </div>
+  </div>
+
+  <script>
+    // Controle de senha
+    const senhaCorreta = "123polo321";
+    const formSenha = document.getElementById("formSenha");
+    const formComanda = document.getElementById("formComanda");
+    const erroSenha = document.getElementById("erroSenha");
+    formSenha.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const senha = document.getElementById("senha").value;
+      if (senha === senhaCorreta) {
+        // Salvar senha no localStorage
+        localStorage.setItem('admin_senha', senha);
+        localStorage.setItem('admin_logado', 'true');
+        
+        formSenha.style.display = "none";
+        formComanda.style.display = "flex";
+        document.getElementById("voltarFormComanda").style.display = "inline-block";
+        erroSenha.style.display = "none";
+      } else {
+        erroSenha.innerText = "Senha incorreta!";
+        erroSenha.style.display = "block";
+      }
+    });
+
+    // Verificar se já está logado
+    function verificarLogin() {
+      const senhaSalva = localStorage.getItem('admin_senha');
+      const logado = localStorage.getItem('admin_logado');
+      
+      if (senhaSalva === senhaCorreta && logado === 'true') {
+        formSenha.style.display = "none";
+        formComanda.style.display = "flex";
+        document.getElementById("voltarFormComanda").style.display = "inline-block";
+        erroSenha.style.display = "none";
+      }
+    }
+
+    // Executar verificação ao carregar
+    verificarLogin();
+    // Submissão do formulário de comanda
+    formComanda.addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const id = document.getElementById("id").value.trim();
+      const nome = document.getElementById("nome").value.trim();
+      const latas = document.getElementById("latas").value;
+      const quentao = document.getElementById("quentao").value;
+      const erroComanda = document.getElementById("erroComanda");
+      erroComanda.style.display = "none";
+      if (!id || !nome) {
+        erroComanda.innerText = "Preencha todos os campos!";
+        erroComanda.style.display = "block";
+        return;
+      }
+      try {
+        const resp = await fetch('abrir_comanda_backend.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `id=${encodeURIComponent(id)}&nome=${encodeURIComponent(nome)}&latas=${encodeURIComponent(latas)}&quentao=${encodeURIComponent(quentao)}`
+        });
+        const data = await resp.json();
+        if (data.sucesso) {
+          document.getElementById("resultado").style.display = "flex";
+          const link = data.link;
+          document.getElementById("link").innerHTML = `<a href="${link}" target="_blank" style="color:#ffb330;text-decoration:none;">${link}</a>`;
+          const qrDiv = document.getElementById("qrcode");
+          qrDiv.innerHTML = "";
+          QRCode.toCanvas(document.createElement('canvas'), link, { width: Math.min(window.innerWidth * 0.8, 300) }, function (error, canvas) {
+            if (!error) qrDiv.appendChild(canvas);
+          });
+        } else {
+          erroComanda.innerText = data.erro || "Erro ao abrir comanda.";
+          erroComanda.style.display = "block";
+        }
+      } catch (err) {
+        erroComanda.innerText = "Erro de conexão.";
+        erroComanda.style.display = "block";
+      }
+    });
+  </script>
+</body>
+</html> 

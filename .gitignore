@@ -1,0 +1,51 @@
+# Arquivos de configuração sensíveis
+credentials.json
+*.key
+*.pem
+.env
+
+# Logs do sistema
+logs/*.log
+logs/*.backup
+*.log
+
+# Dependências do Composer
+/vendor/
+composer.lock
+
+# Arquivos de estado do sistema
+placar_state.json
+placar_history.json
+
+# Arquivos temporários
+*.tmp
+*.temp
+*.cache
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs e editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Arquivos de backup
+*.bak
+*.backup
+*.old
+
+# Arquivos de sessão PHP
+/tmp/
+/sessions/
+
+# Arquivos de upload (se houver)
+uploads/
+
+# Arquivos de configuração local
+config.local.php
+settings.local.php 

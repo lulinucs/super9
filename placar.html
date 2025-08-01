@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #181818;
+      color: #fff;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      min-height: 100vh;
+      width: 100vw;
+      box-sizing: border-box;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+      min-height: 100vh;
+      min-height: 100dvh;
+      width: 100vw;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100vw;
+      min-height: 100vh;
+      padding: 0;
+      box-sizing: border-box;
+      gap: 1.2em;
+    }
+    .timer {
+      font-size: 3.2em;
+      font-weight: bold;
+      letter-spacing: 2px;
+      background: #222;
+      padding: 0.3em 0;
+      margin-bottom: 0.7em;
+      border-radius: 0.5em;
+      box-shadow: 0 2px 12px #0006;
+      min-width: 0;
+      width: 90vw;
+      max-width: 350px;
+      text-align: center;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .placar {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      justify-content: center;
+      gap: 0;
+      width: 90vw;
+      max-width: 350px;
+      margin: 0.5em auto 0.5em auto;
+      box-sizing: border-box;
+      background: #111;
+      border-radius: 0.7em;
+      box-shadow: 0 2px 16px #0008;
+      padding: 0.7em 0;
+    }
+    .time {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1 1 0;
+      min-width: 0;
+      width: 44vw;
+      max-width: 44vw;
+    }
+    .nome-time {
+      font-size: 1.1em;
+      font-weight: bold;
+      margin-bottom: 0.2em;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      width: 100%;
+      text-align: center;
+    }
+    .gols {
+      font-size: 3.2em;
+      font-weight: bold;
+      background: #333;
+      padding: 0.2em 0;
+      border-radius: 0.3em;
+      min-width: 0;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 0.2em;
+    }
+    .controles {
+      display: flex;
+      flex-direction: row;
+      gap: 1.2em;
+      margin-top: 0.5em;
+      width: 100%;
+      justify-content: center;
+    }
+    .controles button {
+      font-size: 1.7em;
+      background: #ffb330;
+      color: #222;
+      border: none;
+      border-radius: 0.3em;
+      padding: 0.3em 0.7em;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+      min-width: 50px;
+      margin: 0;
+    }
+    .controles button:hover {
+      background: #FF3B30;
+      color: #fff;
+    }
+    .config {
+      margin: 1em auto 0.5em auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7em;
+      justify-content: center;
+      align-items: center;
+      width: 90vw;
+      max-width: 350px;
+      background: #232323;
+      border-radius: 0.7em;
+      box-shadow: 0 2px 8px #0004;
+      padding: 1em 0.5em 0.7em 0.5em;
+    }
+    .config > * {
+      margin-bottom: 0.7em;
+      width: 100%;
+      max-width: 320px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+    .config > *:last-child {
+      margin-bottom: 0;
+    }
+    .config label {
+      font-size: 1.1em;
+      color: #ffb330;
+      font-weight: bold;
+      margin-bottom: 0.2em;
+      text-align: center;
+    }
+    .config select, .config button {
+      font-size: 1.1em;
+      padding: 0.6em 0.7em;
+      border-radius: 0.3em;
+      border: none;
+      background: #333;
+      color: #fff;
+      margin: 0.2em 0;
+      width: 100%;
+      max-width: 320px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    .config button {
+      background: #ffb330;
+      color: #222;
+      font-weight: bold;
+      margin: 0.2em 0;
+      cursor: pointer;
+      width: 100%;
+      max-width: 320px;
+      font-size: 1.1em;
+      box-shadow: none;
+      border: none;
+      transition: background 0.2s;
+    }
+    .config button:hover {
+      background: #FF3B30;
+      color: #fff;
+    }
+    @media (max-width: 600px) {
+      .timer { font-size: 2em; min-width: 0; width: 100vw; }
+      .gols { font-size: 1.5em; min-width: 0; width: 100%; }
+      .nome-time { font-size: 1em; width: 100%; }
+      .placar { gap: 0; }
+      .controles button { font-size: 1.3em; }
+      .config select, .config button { font-size: 1em; padding: 0.6em 0.5em; }
+    }
+    .jogadores input {
+      width: 90%;
+      margin: 0.15em 0;
+      padding: 0.3em;
+      border-radius: 0.3em;
+      border: none;
+      font-size: 1em;
+      text-align: center;
+      background: #232323;
+      color: #fff;
+    }
+    .jogadores span {
+      display: block;
+      width: 100%;
+      margin: 0.15em 0;
+      font-size: 1em;
+      color: #ffb330;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+    <div id="titulo-placar" style="font-size:2em; font-weight:bold; color:#ffb330; margin-bottom:0.5em; text-align:center;">
+      🚴‍♂️⚡️ Super Placar Bike Polo ⚡️<br>
+    
+    </div>
+    <div class="config" id="config-area" style="display:none;">
+      <label for="tempo">Tempo:</label>
+      <select id="tempo">
+        <option value="0.25">15s (teste)</option>
+        <option value="12">12:00</option>
+        <option value="15">15:00</option>
+      </select>
+      <button id="btn-iniciar" onclick="iniciarJogo()">Iniciar</button>
+      <button id="btn-pausar" onclick="pausarJogo()" style="background:#ffb330; color:#222; font-weight:bold; border:none; border-radius:0.3em; padding:0.3em 1em; cursor:pointer; display:none;">Pausar</button>
+      <button onclick="resetarJogo()" style="background:#FF3B30; color:#fff; font-weight:bold; border:none; border-radius:0.3em; padding:0.3em 1em; cursor:pointer;">Resetar</button>
+    </div>
+    <div class="timer" id="timer">12:00</div>
+    <div class="placar">
+      <div class="time" id="norte">
+        <div class="nome-time" id="nome-norte">
+          <span id="nome-norte-span">NORTE</span>
+          <input id="input-nome-norte-placar" value="NORTE" style="display:none; font-size:1em; padding:0.2em; width:90%; text-align:center; border-radius:0.3em; border:none; margin-top:0.2em;">
+        </div>
+        <div class="gols" id="gols-norte">0</div>
+        <div class="jogadores" id="jogadores-norte" style="margin-bottom:0.3em;"></div>
+        <div class="controles" id="controles-norte" style="display:none;">
+          <button onclick="alterarGols('norte', 1)">+</button>
+          <button onclick="alterarGols('norte', -1)">-</button>
+        </div>
+      </div>
+      <div style="font-size:2em; font-weight:bold; color:#ffb330;">X</div>
+      <div class="time" id="sul">
+        <div class="nome-time" id="nome-sul">
+          <span id="nome-sul-span">SUL</span>
+          <input id="input-nome-sul-placar" value="SUL" style="display:none; font-size:1em; padding:0.2em; width:90%; text-align:center; border-radius:0.3em; border:none; margin-top:0.2em;">
+        </div>
+        <div class="gols" id="gols-sul">0</div>
+        <div class="jogadores" id="jogadores-sul" style="margin-bottom:0.3em;"></div>
+        <div class="controles" id="controles-sul" style="display:none;">
+          <button onclick="alterarGols('sul', 1)">+</button>
+          <button onclick="alterarGols('sul', -1)">-</button>
+        </div>
+      </div>
+    </div>
+    <div id="salvar-area" style="display:none; margin-top:1.5em; width:90vw; max-width:350px; display:flex; flex-direction:column; align-items:center; gap:1em; margin-left:auto; margin-right:auto;">
+      <button id="btn-salvar-hist" onclick="salvarJogo()" style="font-size:1em; background:#ffb330; color:#222; border:none; border-radius:0.3em; padding:0.9em 1em; font-weight:bold; cursor:pointer; width:100%; max-width:100%; margin-top:0.5em;">Salvar no histórico</button>
+    </div>
+    <div id="historico-area" style="margin-top:2em; width:90vw; max-width:350px; margin-left:auto; margin-right:auto;">
+      <div style="font-size:1.1em; color:#ffb330; font-weight:bold; margin-bottom:0.5em; text-align:center;">Histórico de Jogos</div>
+      <div id="historico-lista" style="font-size:1em; color:#fff; width:100%; max-width:100%; text-align:center;"></div>
+    </div>
+  </div>
+  <script>
+    // --- Estado sincronizado via backend ---
+    let tempoTotal = 12 * 60; // segundos
+    let tempoRestante = tempoTotal;
+    let timerInterval = null;
+    let gols = { norte: 0, sul: 0 };
+    let admin = false;
+    let running = false;
+    let start_time = null;
+    let nome_norte = 'NORTE';
+    let nome_sul = 'SUL';
+    let paused = false;
+    let pause_time = null;
+    let isSettingState = false;
+    let lastSetState = 0;
+    let jogadores_norte = ["Jogador 1", "Jogador 2", "Jogador 3"];
+    let jogadores_sul = ["Jogador 1", "Jogador 2", "Jogador 3"];
+    let pollingPaused = false;
+    let pollingInterval = null;
+
+    // Detecta modo admin
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('admin') === '1') {
+      admin = true;
+      document.getElementById('config-area').style.display = '';
+      document.getElementById('controles-norte').style.display = '';
+      document.getElementById('controles-sul').style.display = '';
+      document.getElementById('salvar-area').style.display = '';
+    }
+
+    function formatarTempo(segundos) {
+      const m = Math.floor(segundos / 60).toString().padStart(2, '0');
+      const s = (segundos % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function atualizarBotoesTimer() {
+      const btnIniciar = document.getElementById('btn-iniciar');
+      const btnPausar = document.getElementById('btn-pausar');
+      if (!running && !paused) {
+        btnIniciar.style.display = '';
+        btnPausar.style.display = 'none';
+      } else {
+        btnIniciar.style.display = 'none';
+        btnPausar.style.display = '';
+        btnPausar.innerText = paused ? 'Continuar' : 'Pausar';
+      }
+    }
+
+    function atualizarTela() {
+      document.getElementById('timer').innerText = formatarTempo(tempoRestante);
+      document.getElementById('gols-norte').innerText = gols.norte;
+      document.getElementById('gols-sul').innerText = gols.sul;
+      document.getElementById('nome-norte-span').innerText = nome_norte;
+      document.getElementById('nome-sul-span').innerText = nome_sul;
+      document.getElementById('input-nome-norte-placar').value = nome_norte;
+      document.getElementById('input-nome-sul-placar').value = nome_sul;
+      renderJogadores();
+      if (admin) atualizarBotoesTimer();
+    }
+
+    function fetchState() {
+      if (isSettingState || pollingPaused) return; // não sobrescreve durante ação admin ou edição
+      fetch('placar_backend.php?action=get_state')
+        .then(r => r.json())
+        .then(state => {
+          tempoTotal = state.tempo_total;
+          tempoRestante = state.timer;
+          gols = state.gols;
+          running = state.running;
+          paused = state.paused;
+          pause_time = state.pause_time;
+          start_time = state.start_time;
+          nome_norte = state.nome_norte;
+          nome_sul = state.nome_sul;
+          jogadores_norte = state.jogadores_norte || ["Jogador 1", "Jogador 2", "Jogador 3"];
+          jogadores_sul = state.jogadores_sul || ["Jogador 1", "Jogador 2", "Jogador 3"];
+          atualizarTela();
+        });
+    }
+    function startPolling() {
+      if (pollingInterval) clearInterval(pollingInterval);
+      pollingInterval = setInterval(fetchState, 2000);
+    }
+    function stopPolling() {
+      if (pollingInterval) clearInterval(pollingInterval);
+    }
+
+    function setStateBackend() {
+      isSettingState = true;
+      lastSetState = Date.now();
+      fetch('placar_backend.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          action: 'set_state',
+          gols_norte: gols.norte,
+          gols_sul: gols.sul,
+          running: running ? 1 : 0,
+          start_time: start_time || '',
+          tempo_total: tempoTotal,
+          paused: paused ? 1 : 0,
+          pause_time: pause_time || '',
+          nome_norte: nome_norte,
+          nome_sul: nome_sul,
+          jogadores_norte: JSON.stringify(jogadores_norte),
+          jogadores_sul: JSON.stringify(jogadores_sul),
+        })
+      })
+      .then(r => r.json())
+      .finally(() => {
+        setTimeout(() => { isSettingState = false; }, 400); // libera polling após 400ms
+      });
+    }
+
+    function iniciarJogo() {
+      const select = document.getElementById('tempo');
+      let val = parseFloat(select.value);
+      tempoTotal = val > 1 ? val * 60 : Math.round(val * 60); // 0.05 = 3s
+      tempoRestante = tempoTotal;
+      running = true;
+      paused = false;
+      pause_time = null;
+      start_time = null; // será definido no backend como time()
+      atualizarTela();
+      setStateBackend();
+      if (timerInterval) clearInterval(timerInterval);
+      if (admin) {
+        timerInterval = setInterval(() => {
+          fetchState();
+          // ALERTAS
+          if (tempoRestante === 60 || tempoRestante === 30 || tempoRestante === 10) {
+            beep();
+            piscarTimer();
+          }
+          if (tempoRestante <= 0 || !running || paused) {
+            clearInterval(timerInterval);
+          }
+        }, 1000);
+      }
+      if (admin) atualizarBotoesTimer();
+    }
+
+    function resetarJogo() {
+      if (!confirm('Tem certeza que deseja resetar o placar e o tempo?')) return;
+      if (timerInterval) clearInterval(timerInterval);
+      tempoRestante = tempoTotal;
+      gols = { norte: 0, sul: 0 };
+      running = false;
+      paused = false;
+      pause_time = null;
+      start_time = null;
+      atualizarTela();
+      setStateBackend();
+      if (admin) atualizarBotoesTimer();
+    }
+
+    function pausarJogo() {
+      if (!running) return;
+      paused = !paused;
+      if (paused) {
+        pause_time = Math.floor(Date.now() / 1000);
+      } else {
+        if (pause_time && start_time) {
+          // Ajusta start_time para descontar o tempo pausado
+          let pausado = Math.floor(Date.now() / 1000) - pause_time;
+          start_time = start_time + pausado;
+        }
+        pause_time = null;
+      }
+      setStateBackend();
+      if (admin) atualizarBotoesTimer();
+    }
+
+    function alterarGols(time, delta) {
+      gols[time] = Math.max(0, gols[time] + delta);
+      atualizarTela();
+      setStateBackend();
+    }
+
+    function salvarJogo() {
+      fetch('placar_backend.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          action: 'save_game',
+          nome_norte: nome_norte,
+          nome_sul: nome_sul,
+          gols_norte: gols.norte,
+          gols_sul: gols.sul,
+          tempo_total: tempoTotal,
+          jogadores_norte: JSON.stringify(jogadores_norte),
+          jogadores_sul: JSON.stringify(jogadores_sul),
+        })
+      }).then(() => {
+        fetchHistory();
+      });
+    }
+
+    function fetchHistory() {
+      fetch('placar_backend.php?action=get_history')
+        .then(r => r.json())
+        .then(hist => {
+          const lista = document.getElementById('historico-lista');
+          if (!hist.length) {
+            lista.innerHTML = '<div style="color:#888;">Nenhum jogo salvo ainda.</div>';
+            return;
+          }
+          lista.innerHTML = hist.reverse().map(jogo =>
+            `<div style="margin-bottom:0.5em; background:#222; padding:0.5em 0.7em; border-radius:0.5em;">
+              <span style="color:#ffb330; font-weight:bold;">${jogo.nome_norte}</span>
+              <span style="font-size:1.1em; font-weight:bold; margin:0 0.5em; color:#fff;">${jogo.gols_norte} x ${jogo.gols_sul}</span>
+              <span style="color:#ffb330; font-weight:bold;">${jogo.nome_sul}</span>
+              <span style="color:#888; font-size:0.9em; margin-left:0.7em;">${jogo.data}</span><br>
+              <span style='font-size:0.95em; color:#ffb330;'>${(jogo.jogadores_norte||[]).join(' / ')}</span> <span style='color:#fff;'>vs</span> <span style='font-size:0.95em; color:#ffb330;'>${(jogo.jogadores_sul||[]).join(' / ')}</span>
+            </div>`
+          ).join('');
+        });
+    }
+
+    function renderJogadores() {
+      // Norte
+      const divN = document.getElementById('jogadores-norte');
+      divN.innerHTML = '';
+      if (admin) {
+        jogadores_norte.forEach((nome, i) => {
+          divN.innerHTML += `<input value="${nome}" onchange="atualizarJogador('norte',${i},this.value)" onfocus="pausePolling()" onblur="resumePolling()" />`;
+        });
+      } else {
+        jogadores_norte.forEach((nome) => {
+          divN.innerHTML += `<span>${nome}</span>`;
+        });
+      }
+      // Sul
+      const divS = document.getElementById('jogadores-sul');
+      divS.innerHTML = '';
+      if (admin) {
+        jogadores_sul.forEach((nome, i) => {
+          divS.innerHTML += `<input value="${nome}" onchange="atualizarJogador('sul',${i},this.value)" onfocus="pausePolling()" onblur="resumePolling()" />`;
+        });
+      } else {
+        jogadores_sul.forEach((nome) => {
+          divS.innerHTML += `<span>${nome}</span>`;
+        });
+      }
+    }
+    window.pausePolling = function() { pollingPaused = true; stopPolling(); };
+    window.resumePolling = function() { pollingPaused = false; startPolling(); };
+
+    function atualizarJogador(time, idx, val) {
+      if (time === 'norte') {
+        jogadores_norte[idx] = val;
+      } else {
+        jogadores_sul[idx] = val;
+      }
+      setStateBackend();
+      renderJogadores();
+    }
+
+    // --- SONS DE ALERTA ---
+    function beep() {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.value = 880;
+      g.gain.value = 0.2;
+      o.connect(g); g.connect(ctx.destination);
+      o.start();
+      setTimeout(() => { o.stop(); ctx.close(); }, 180);
+    }
+
+    function piscarTimer() {
+      const timer = document.getElementById('timer');
+      timer.classList.add('piscar');
+      setTimeout(() => timer.classList.remove('piscar'), 700);
+    }
+
+    // Adiciona CSS para piscar
+    const stylePiscar = document.createElement('style');
+    stylePiscar.innerHTML = `.piscar { background: #ffb330 !important; color: #222 !important; animation: piscar-timer 0.7s; }
+    @keyframes piscar-timer { 0%{background:#ffb330;color:#222;} 50%{background:#222;color:#ffb330;} 100%{background:#ffb330;color:#222;} }`;
+    document.head.appendChild(stylePiscar);
+
+    // Atualização periódica para todos os acessos
+    startPolling();
+    fetchState();
+    fetchHistory();
+    atualizarTela();
+    renderJogadores();
+
+    // Edição do nome do time (admin)
+    if (admin) {
+      document.getElementById('nome-norte-span').onclick = function() {
+        this.style.display = 'none';
+        document.getElementById('input-nome-norte-placar').style.display = '';
+        document.getElementById('input-nome-norte-placar').focus();
+        pausePolling();
+      };
+      document.getElementById('input-nome-norte-placar').onblur = function() {
+        this.style.display = 'none';
+        document.getElementById('nome-norte-span').style.display = '';
+        nome_norte = this.value.trim() || 'NORTE';
+        setStateBackend();
+        atualizarTela();
+        resumePolling();
+      };
+      document.getElementById('nome-sul-span').onclick = function() {
+        this.style.display = 'none';
+        document.getElementById('input-nome-sul-placar').style.display = '';
+        document.getElementById('input-nome-sul-placar').focus();
+        pausePolling();
+      };
+      document.getElementById('input-nome-sul-placar').onblur = function() {
+        this.style.display = 'none';
+        document.getElementById('nome-sul-span').style.display = '';
+        nome_sul = this.value.trim() || 'SUL';
+        setStateBackend();
+        atualizarTela();
+        resumePolling();
+      };
+    }
+
+    // Esconde botão de salvar histórico e subtítulo para não admin
+    if (!admin) {
+      document.getElementById('salvar-area').style.display = 'none';
+      document.getElementById('subtitulo-placar').style.display = 'none';
+    } else {
+      document.getElementById('salvar-area').style.display = '';
+      document.getElementById('subtitulo-placar').style.display = '';
+    }
+
+    // Centralização vertical total
+    document.body.style.display = 'flex';
+    document.body.style.flexDirection = 'column';
+    document.body.style.justifyContent = 'center';
+    document.body.style.alignItems = 'center';
+    document.body.style.minHeight = '100vh';
+  </script>
+</body>
+</html> 

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Super9</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #181818;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      width: 100vw;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    body {
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+      padding: 0;
+    }
+    .conteudo-central {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 1em;
+    }
+    h1 {
+      font-size: 2.5em;
+      margin: 0.5em 0 1em 0;
+      color: #FF3B30;
+      font-weight: 900;
+      text-shadow: 0 0 10px #ff3b30aa;
+    }
+    .menu-admin {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5em;
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .botao-admin {
+      background: linear-gradient(135deg, #FF3B30 0%, #ff6b5e 100%);
+      color: #fff;
+      font-size: 1.8em;
+      border: none;
+      border-radius: 20px;
+      padding: 1.5em 1em;
+      cursor: pointer;
+      box-shadow: 0 8px 25px #ff3b30aa;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 80px;
+      line-height: 1.2;
+    }
+    .botao-admin:hover {
+      background: linear-gradient(135deg, #ffb330 0%, #ffc85e 100%);
+      color: #222;
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px #ffb330aa;
+    }
+    .botao-admin:active {
+      transform: translateY(0);
+    }
+    .icone {
+      font-size: 2em;
+      margin-right: 0.5em;
+    }
+    .subtitulo {
+      font-size: 0.9em;
+      opacity: 0.8;
+      margin-top: 0.3em;
+    }
+    .formulario {
+      background: #222;
+      border-radius: 20px;
+      padding: 2em 1em;
+      box-shadow: 0 8px 25px #0004;
+      max-width: 95vw;
+      margin: 1em auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5em;
+      align-items: center;
+    }
+    label {
+      font-size: 1.3em;
+      margin-bottom: 0.5em;
+      color: #ffb330;
+      font-weight: bold;
+    }
+    input[type="password"] {
+      padding: 1em;
+      border-radius: 15px;
+      border: none;
+      font-size: 1.3em;
+      width: 90vw;
+      max-width: 300px;
+      margin-bottom: 1em;
+      background: #181818;
+      color: #fff;
+      box-shadow: 0 4px 15px #0002;
+      text-align: center;
+    }
+    button {
+      background: linear-gradient(135deg, #FF3B30 0%, #ff6b5e 100%);
+      color: #fff;
+      font-size: 1.5em;
+      border: none;
+      border-radius: 15px;
+      padding: 1em 2em;
+      cursor: pointer;
+      box-shadow: 0 8px 25px #ff3b30aa;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      min-width: 200px;
+    }
+    button:hover {
+      background: linear-gradient(135deg, #ffb330 0%, #ffc85e 100%);
+      color: #222;
+      transform: translateY(-2px);
+    }
+    .erro {
+      color: #ff3b30;
+      font-weight: bold;
+      margin-top: 1em;
+      font-size: 1.1em;
+    }
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2.2em;
+      }
+      .botao-admin {
+        font-size: 1.6em;
+        padding: 1.3em 0.8em;
+        min-height: 70px;
+      }
+      .icone {
+        font-size: 1.8em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="conteudo-central">
+    <h1>🔧 Admin Super9</h1>
+    
+    <form class="formulario" id="formSenha">
+      <label for="senha">Senha de acesso:</label>
+      <input type="password" id="senha" name="senha" required autocomplete="off" placeholder="Digite a senha" />
+      <button type="submit">Entrar</button>
+      <div class="erro" id="erroSenha" style="display:none;"></div>
+    </form>
+    
+    <div class="menu-admin" id="menuAdmin" style="display:none;">
+      <a href="abrir_comanda.html" class="botao-admin">
+        <span class="icone">🔑</span>
+        <div>
+          <div>Abrir Comanda</div>
+          <div class="subtitulo">Criar nova comanda</div>
+        </div>
+      </a>
+
+      <a href="gerenciar_comandas.html" class="botao-admin">
+        <span class="icone">📋</span>
+        <div>
+          <div>Gerenciar Comandas</div>
+          <div class="subtitulo">Listar e gerenciar comandas abertas</div>
+        </div>
+      </a>
+      
+      <a href="adicionar_fichas.html" class="botao-admin">
+        <span class="icone">🍺</span>
+        <div>
+          <div>Adicionar Fichas</div>
+          <div class="subtitulo">Adicionar fichas a comandas existentes</div>
+        </div>
+      </a>
+      
+      <a href="placar.html?admin=1" class="botao-admin">
+        <span class="icone">🏑</span>
+        <div>
+          <div>Placar Bike Polo</div>
+          <div class="subtitulo">Controlar placar e tempo dos jogos</div>
+        </div>
+      </a>
+      
+      <a href="visualizar_logs.php" class="botao-admin">
+        <span class="icone">📊</span>
+        <div>
+          <div>Visualizar Logs</div>
+          <div class="subtitulo">Ver logs do sistema</div>
+        </div>
+      </a>
+      
+      <button class="botao-admin" onclick="fazerLogout()" style="background: linear-gradient(135deg, #666 0%, #888 100%); box-shadow: 0 8px 25px #666aaa;">
+        <span class="icone">🚪</span>
+        <div>
+          <div>Sair</div>
+          <div class="subtitulo">Fazer logout do admin</div>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Controle de senha
+    const senhaCorreta = "123polo321";
+    const formSenha = document.getElementById("formSenha");
+    const menuAdmin = document.getElementById("menuAdmin");
+    const erroSenha = document.getElementById("erroSenha");
+    
+    formSenha.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const senha = document.getElementById("senha").value;
+      if (senha === senhaCorreta) {
+        // Salvar senha no localStorage
+        localStorage.setItem('admin_senha', senha);
+        localStorage.setItem('admin_logado', 'true');
+        
+        formSenha.style.display = "none";
+        menuAdmin.style.display = "flex";
+        erroSenha.style.display = "none";
+      } else {
+        erroSenha.innerText = "Senha incorreta!";
+        erroSenha.style.display = "block";
+      }
+    });
+
+    // Verificar se já está logado
+    function verificarLogin() {
+      const senhaSalva = localStorage.getItem('admin_senha');
+      const logado = localStorage.getItem('admin_logado');
+      
+      if (senhaSalva === senhaCorreta && logado === 'true') {
+        formSenha.style.display = "none";
+        menuAdmin.style.display = "flex";
+        erroSenha.style.display = "none";
+      }
+    }
+
+    // Executar verificação ao carregar
+    verificarLogin();
+
+    // Função de logout
+    function fazerLogout() {
+      localStorage.removeItem('admin_senha');
+      localStorage.removeItem('admin_logado');
+      location.reload();
+    }
+  </script>
+</body>
+</html> 
